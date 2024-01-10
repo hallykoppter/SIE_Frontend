@@ -21,3 +21,17 @@ body {
   height: 100vh;
   overflow-x: hidden;
 }
+
+.shape1 {
+  margin: auto 0;
+  animation: ShapeRotate 10s infinite linear;
+}
+
+@keyframes ShapeRotate {
+  form {
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(-360deg);
+  }
+}
