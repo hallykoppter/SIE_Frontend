@@ -1,7 +1,5 @@
-import { sign } from "crypto"
 import nextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { pages } from "next/dist/build/templates/app-page"
 
 const authOptions = {
   providers: [
@@ -13,11 +11,6 @@ const authOptions = {
         password: { label: "password", type: "password" },
       },
       async authorize(credentials, req) {
-        const cred = {
-          username: credentials.username,
-          password: credentials.password,
-        }
-
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/login`,
           {
@@ -26,14 +19,34 @@ const authOptions = {
               accept: "application/json",
               "Content-Type": "application/json",
             },
-            body: { cred },
+            body: JSON.stringify({
+              username: credentials?.username,
+              password: credentials?.password,
+            }),
           }
         )
+        const user = await res.json()
+
+        if (user) {
+          return user
+        } else {
+          return null
+        }
       },
     }),
   ],
   pages: {
-    sign: "/login",
+    signIn: "/src/app/(auth)/login",
+    signOut: "/src/app/(auth)/logout",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      return { ...token, ...user }
+    },
+    async session({ session, token, user }) {
+      session.user = token
+      return session
+    },
   },
 }
 

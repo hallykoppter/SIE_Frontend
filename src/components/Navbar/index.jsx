@@ -1,10 +1,22 @@
 "use client"
+
 import Link from "next/link"
 import Navlink from "./Navlink"
-import { useAuth } from "@/hooks/auth"
+import { useSession } from "next-auth/react"
 
 const Navbar = () => {
-  const { logout } = useAuth()
+  const { data: session } = useSession()
+
+  const user = session?.user.name
+
+  const inOrOut = () => {
+    if (!user) {
+      return <Navlink href={"/login"} title={"Login"} />
+    } else {
+      return <Navlink href={"/logout"} title={"Logout"} />
+    }
+  }
+
   return (
     <div className="flex justify-between items-center p-2 mx-4 pt-4">
       <div className="text-xl font-titan text-secondary">
@@ -14,8 +26,7 @@ const Navbar = () => {
       </div>
       <div className="flex gap-3">
         <Navlink href={"#"} title={"About"} />
-        <Navlink href={"/login"} title={"Login"} />
-        <button onClick={logout}>Logout</button>
+        {inOrOut()}
       </div>
     </div>
   )
